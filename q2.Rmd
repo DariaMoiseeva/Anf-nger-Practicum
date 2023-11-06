@@ -4,27 +4,59 @@ author: "Daria Moiseeva 12619364"
 date: "2023-10-28"
 output: html_document
 ---
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r readin data}
+library(readxl)
+data <- read_xlsx("MUE.2022.for.LMU.xlsx")
 
-```{r cars}
-summary(cars)
+library(dplyr)
+library(tidyr)
+library(tibble)
+
+
+
+data.Q2.A <- data %>%
+  select(SERIAL,class,C001_01,C001_02,C001_03) %>%
+  pivot_longer(cols=c("C001_01","C001_02","C001_03"),
+               names_to = "type",
+               values_to="frequency")%>%
+  group_by(class,type)%>%
+  count(frequency) %>%
+  group_by(class,type)%>%
+  mutate(number_corps=sum(n))%>%
+  mutate(percent=n/number_corps)%>%
+  filter(frequency >= 1)
+  
+  
+
+data.Q2.A
+
+library(ggplot2)
+
+ggplot(data.Q2.A,aes(x = factor(class, levels = c("Kleine Unternehmen","Mittlere Unternehmen","Großunternehmen"),labels = c("Small","Middle","Big")),y = percent, fill = factor(frequency))) +
+  geom_col(position ="dodge") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(x = "Size of organisation", y = "Percent of organisations engaged", 
+       title = "Frequency of corporate volunteering activities
+in relationship to the size of a company") +
+  scale_fill_discrete(name ="Frequency of engagement :",labels = c("At no time","In particular cases","Regular"))
+
+
+
+
+
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
 
 ```{r pressure, echo=FALSE}
 plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
