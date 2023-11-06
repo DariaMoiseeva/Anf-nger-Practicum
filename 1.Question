@@ -7,7 +7,7 @@ library(tidyr)
 library(ggplot2)
 library(dplyr)
 data <- data %>%
-  mutate(across(starts_with("activity"), ~ . %in% c(1, 2)))  # 将活动列转换为逻辑值，1或2表示TRUE，其它表示FALSE
+  mutate(across(starts_with("activity"), ~ . %in% c(1, 2)))  
 
 
 data_long <- data %>%
@@ -19,7 +19,6 @@ data_long <- data %>%
             participated_count = sum(participated)) %>%
   mutate(percentage = participated_count / count)
 
-
 ggplot(data_long, aes(x = as.factor(company_size), y = percentage, fill = activity)) +
   geom_bar(stat = "identity", position = "dodge") +
   scale_y_continuous(labels = scales::percent_format()) +
@@ -28,12 +27,50 @@ ggplot(data_long, aes(x = as.factor(company_size), y = percentage, fill = activi
        fill = "Activity") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-### Activity Participation: There's a visible trend that participation in activities varies with company size.
 
-###Smaller Companies (Size 1 and 2): These companies have lower participation rates in all activities compared to larger companies.
-
-#Mid-Sized Companies (Size 3 and 4): These companies show a moderate level of participation, with company size 4 having a notably higher participation in "activity1" compared to "activity2" and "activity3."
-
-#Larger Companies (Size 5 and 6): The largest companies have the highest participation rates in all three activities, suggesting that as companies grow in size, they may have more resources or inclination to participate in volunteering activities.
-
-#Relative Popularity of Activities: "Activity3" seems to be the most popular or most participated in across all company sizes, while "activity1" and "activity2" fluctuate more noticeably between different company sizes.
+#  Activity Participation: There's a visible trend that participation in activities 
+#  varies with company size.
+# 
+# Smaller Companies (Size 1 and 2): These companies have lower participation rates 
+# in all activities compared to larger companies.
+# 
+# Mid-Sized Companies (Size 3 and 4): These companies show a moderate level of 
+# participation, with company size 4 having a notably higher participation in 
+# "activity1" compared to "activity2" and "activity3."
+# 
+# Larger Companies (Size 5 and 6): The largest companies have the highest 
+# participation rates in all three activities, suggesting that as companies grow
+# in size, they may have more resources or inclination to participate in volunteering activities.
+# 
+# #Relative Popularity of Activities: "Activity3" seems to be the most popular or
+# most participated in across all company sizes, while "activity1" and "activity2"
+# fluctuate more noticeably between different company sizes.
+# 
+# 
+# Activity1: The participation in activity1 seems relatively stable across company
+#  sizes, with a slight increase in larger companies. Companies of size 1 have the
+#  lowest participation rate in this activity, and as the company size increases, 
+#  there's a general trend of increased participation, peaking with companies of size 6.
+# 
+# Activity2: This activity shows a more varied pattern. Companies of size 2 and 5 
+# have the highest participation rates, whereas companies of size 1 and 4 have 
+# lower rates. Companies of size 3 and 6 fall in the middle. This suggests that
+# company size does not have a straightforward correlation with participation in activity2.
+# 
+# Activity3: There is a clear trend that larger companies participate more in 
+# activity3. The smallest companies (size 1) have the lowest participation rate, 
+# and there is a consistent increase as company size grows, with companies of 
+# size 6 showing the highest rate of participation.
+# 
+# In summary, corporate volunteering activities differ among companies of different
+# sizes in the following ways:
+#   
+#   There is a general trend where larger companies tend to participate more in 
+# volunteering activities, especially noticeable in activity3.
+# Activity1 has a moderate increase in participation with company size but is 
+# relatively stable compared to the other activities.
+# Activity2 does not show a clear trend related to company size, indicating that
+# other factors might influence participation in this activity.
+# The most significant difference is seen in activity3, which suggests that larger
+# companies may have more resources or policies in place that encourage or facilitate
+# participation in such activities.
