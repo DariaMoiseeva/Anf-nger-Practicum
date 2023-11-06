@@ -1,1 +1,29 @@
-1
+wholeSet <- read_excel("~/lmu/project/MUE.2022.for.LMU-2.xlsx")
+data <- wholeSet[, c(2, 6, 7, 8)]
+colnames(data) <- c("company_size", "activity1", "activity2", "activity3")
+library(ggplot2)
+library(tidyr)
+library(ggplot2)
+data_long <- data %>%
+  pivot_longer(cols = starts_with("activity"), 
+               names_to = "activity", 
+               values_to = "participation") %>%
+  group_by(company_size, activity) %>%
+  summarise(participated = mean(participation == 1))
+ggplot(data_long, aes(x = as.factor(company_size), y = participated, fill = activity)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(labels = scales::percent) + 
+  labs(x = "Company Size", 
+       y = "Percentage Participated", 
+       fill = "Activity") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+### Activity Participation: There's a visible trend that participation in activities varies with company size.
+
+###Smaller Companies (Size 1 and 2): These companies have lower participation rates in all activities compared to larger companies.
+
+#Mid-Sized Companies (Size 3 and 4): These companies show a moderate level of participation, with company size 4 having a notably higher participation in "activity1" compared to "activity2" and "activity3."
+
+#Larger Companies (Size 5 and 6): The largest companies have the highest participation rates in all three activities, suggesting that as companies grow in size, they may have more resources or inclination to participate in volunteering activities.
+
+#Relative Popularity of Activities: "Activity3" seems to be the most popular or most participated in across all company sizes, while "activity1" and "activity2" fluctuate more noticeably between different company sizes.
