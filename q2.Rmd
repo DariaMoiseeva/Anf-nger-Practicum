@@ -46,17 +46,8 @@ ggplot(data.Q2.A,aes(x = factor(class, levels = c("Kleine Unternehmen","Mittlere
 in relationship to the size of a company") +
   scale_fill_discrete(name ="Frequency of engagement :",labels = c("At no time","In particular cases","Regular"))
 
-
-
-
-
 ```
 
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
 
