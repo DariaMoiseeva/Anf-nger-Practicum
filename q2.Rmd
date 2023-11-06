@@ -10,16 +10,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 
-```{r readin data}
+```{r reading data, include=FALSE}
 library(readxl)
 data <- read_xlsx("MUE.2022.for.LMU.xlsx")
 
 library(dplyr)
 library(tidyr)
 library(tibble)
+library(ggplot2)
+```
 
-
-
+```{r  data}
 data.Q2.A <- data %>%
   select(SERIAL,class,C001_01,C001_02,C001_03) %>%
   pivot_longer(cols=c("C001_01","C001_02","C001_03"),
@@ -31,12 +32,8 @@ data.Q2.A <- data %>%
   mutate(number_corps=sum(n))%>%
   mutate(percent=n/number_corps)%>%
   filter(frequency >= 1)
-  
-  
 
 data.Q2.A
-
-library(ggplot2)
 
 ggplot(data.Q2.A,aes(x = factor(class, levels = c("Kleine Unternehmen","Mittlere Unternehmen","Großunternehmen"),labels = c("Small","Middle","Big")),y = percent, fill = factor(frequency))) +
   geom_col(position ="dodge") +
@@ -45,7 +42,6 @@ ggplot(data.Q2.A,aes(x = factor(class, levels = c("Kleine Unternehmen","Mittlere
        title = "Frequency of corporate volunteering activities
 in relationship to the size of a company") +
   scale_fill_discrete(name ="Frequency of engagement :",labels = c("At no time","In particular cases","Regular"))
-
 ```
 
 
