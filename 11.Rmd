@@ -1,0 +1,67 @@
+---
+title: "Untitled"
+author: "Tangqian Zhou 12626391"
+date: "2023-10-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+```{r}
+library(readxl)
+library(dplyr)
+data<-read_excel("MUE.2022.for.LMU.xlsx")
+data
+data$A001<-as.character(data$A001)
+data$A001 <- case_when(
+  data$A001 == 1 ~ "1-9",
+  data$A001 == 2 ~ "10-49",
+  data$A001 == 3 ~ "50-249",
+  data$A001 == 4 ~ "250-999",
+  data$A001 == 5 ~ "1000-10000",
+  data$A001 == 6 ~ "mehr als 10000",
+  TRUE ~ "Other"
+  )
+service<-subset(data,A003 %in% c(1,3,8,9,10,11,14,18,19))
+service
+manufacturing<-subset(data,A003 %in% c(2,4,5,6,7,16,17,20))
+manufacturing
+all_categories <- data.frame(A001 = factor(c("1-9", "10-49", "50-249", "250-999", "1000-10000", "mehr als 10000"),levels=c("1-9", "10-49", "50-249", "250-999", "1000-10000", "mehr als 10000")))
+service_counts <- table(service$A001)
+manufacturing_counts <- table(manufacturing$A001)
+all_service_counts <- merge(all_categories, data.frame(A001 = names(service_counts), Count = as.numeric(service_counts)), all.x = TRUE, by = "A001")
+all_manufacturing_counts <- merge(all_categories, data.frame(A001 = names(manufacturing_counts), Count = as.numeric(manufacturing_counts)), all.x = TRUE, by = "A001")
+all_service_counts$Count[is.na(all_service_counts$Count)] <- 0
+all_manufacturing_counts$Count[is.na(all_manufacturing_counts$Count)] <- 0
+barplot(rbind(all_service_counts$Count, all_manufacturing_counts$Count),
+        beside = TRUE,
+        names.arg = levels(all_categories$A001),
+        col = c("blue", "green"),
+        legend.text = c("Service Industry", "Manufacturing Industry"),
+        main = "Difference in the number of engaged employees in the service industry
+versus the manufacturing industry",
+        xlab = "Number Ranges",
+        ylab = "Number of engaged companies",
+        las=2
+)
+```
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
