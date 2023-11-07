@@ -1,0 +1,60 @@
+---
+title: "q8"
+author: "Name:Fengyan Shen Nummer:12665659"
+date: "2023-11-07"
+output: pdf_document
+---
+```{r}
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(reshape2)
+library(tidyr)
+data<-read_excel("MUE.2022.for.LMU.xlsx")
+df1 <- data %>% select(SERIAL,D001_01,D001_02,D001_03,D001_04,D001_05,D001_06,D001_07,D001_08,D001_09,D001_10,D001_11,D001_12)
+df2 <-data %>% select(SERIAL, E004_01,E004_02,E004_03,E004_04,E004_05,E004_06,E004_07)
+df_industry_long <- pivot_longer(df1,cols = -SERIAL,names_to = "industry", values_to = "element")
+df_challenges_long <- pivot_longer(df2,cols = -SERIAL,names_to = "challenge", values_to = "element")
+df_industry_long <- na.omit(df_industry_long)
+df_challenges_long <- na.omit(df_challenges_long)
+df_challenges_long
+df_industry_long <- df_industry_long[df_industry_long$element == TRUE,]
+df_challenges_long <- df_challenges_long[df_challenges_long$element ==TRUE,]
+#df_challenges_long
+#df_industry_long
+merged_df <- merge(df_industry_long, df_challenges_long, by ="SERIAL")
+replacement_map <- c("D001_01"="Kunst und Kultur", "D001_02"="Sport", "D001_03"="Freizeit und Geselligkeit","D001_04"= "Wissenschaft und Forschung","D001_05"= "Bildung und Weiterbildung", "D001_06"="Gesundheit", 
+            "D001_07"="Soziales", "D001_08"="Bevölkerungs-/Katastrophenschutz", "D001_09"="Klima- und Umweltschutz", "D001_10"="Klima- und Umweltschutz","D001_11"= "Kirche und Religion", "D001_12"="Sonstige Bereiche" )
+replace2 <- c("E004_01"="Geeignete Angebote zur Beteiligung finden","E004_02"="Mitarbeitende zur Teilnahme gewinnen","E004_03"=" Koordination der Mitarbeitenden","E004_04"=" Begrenzte Zeit von Mitarbeitenden","E004_05"="Kosten des Programms","E004_06"=" Fehlende Unterstützung der Geschäftsführung","E004_07"="Sonstiges und zwar")####
+merged_df$industry <- replacement_map[merged_df$industry]
+merged_df$challenge <- replace2[merged_df$challenge]
+merged_df
+ggplot(merged_df)+
+  geom_bar(mapping = aes(x=industry, fill=challenge))+
+   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  ggtitle("challenges vary across industries") 
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
