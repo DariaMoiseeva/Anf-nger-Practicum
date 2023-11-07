@@ -74,6 +74,7 @@ labs(x = "Size of organisation", y = "Percent of organisations of the same size 
      title = "Frequency : Regular")
 
 p1 + p2 + p3
+
 ```
 
 ```{r  data.Q2}
