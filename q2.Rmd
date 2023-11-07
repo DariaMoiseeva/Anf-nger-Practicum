@@ -2,7 +2,9 @@
 title: "q2"
 author: "Daria Moiseeva 12619364"
 date: "2023-10-28"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -18,10 +20,14 @@ library(dplyr)
 library(tidyr)
 library(tibble)
 library(ggplot2)
+library(gridExtra)
+library(patchwork)
+
+cbPalette <- c("#999999", "#CC79A7","#F0E442", "#0072B2", "#D55E00")
 ```
 
-```{r  data}
-data.Q2.A <- data %>%
+```{r  data.Q2}
+data.Q2 <- data %>%
   select(SERIAL,class,C001_01,C001_02,C001_03) %>%
   pivot_longer(cols=c("C001_01","C001_02","C001_03"),
                names_to = "type",
@@ -30,20 +36,46 @@ data.Q2.A <- data %>%
   count(frequency) %>%
   group_by(class,type)%>%
   mutate(number_corps=sum(n))%>%
-  mutate(percent=n/number_corps)%>%
-  filter(frequency >= 1)
-
-data.Q2.A
-
-ggplot(data.Q2.A,aes(x = factor(class, levels = c("Kleine Unternehmen","Mittlere Unternehmen","Großunternehmen"),labels = c("Small","Middle","Big")),y = percent, fill = factor(frequency))) +
-  geom_col(position ="dodge") +
-  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
-  labs(x = "Size of organisation", y = "Percent of organisations engaged", 
-       title = "Frequency of corporate volunteering activities
+  mutate(percent=n/number_corps)
+  
+ggplot(data.Q2,aes(x = factor(class, levels = c("Kleine Unternehmen","Mittlere Unternehmen","Großunternehmen"),labels = c("Small","Middle","Big")),y = percent,
+fill = factor(frequency))) +
+geom_col(position ="dodge") +
+labs(x = "Size of organisation", y = "Percent of organisations engaged", 
+title = "Frequency of corporate volunteering activities
 in relationship to the size of a company") +
-  scale_fill_discrete(name ="Frequency of engagement :",labels = c("At no time","In particular cases","Regular"))
+scale_fill_discrete(name ="Frequency of engagement :",labels = 
+c("No Answer","No Information","At no time","In particular cases","Regular"))+
+scale_fill_manual(values = cbPalette)
+
+data.Q2A <- data.Q2 %>%
+  filter(frequency == 1)
+  
+p1 <- ggplot(data.Q2A,aes(x = factor(class, levels = c("Kleine Unternehmen","Mittlere Unternehmen","Großunternehmen"),labels = c("Small","Middle","Big")),y = percent))+
+geom_boxplot(fill = "#F0E442", colour = "#000000")+
+labs(x = "Size of organisation", y = "Percent of organisations of the same size engaged",
+     title = "Frequency : At no time")
+
+data.Q2B <- data.Q2 %>%
+  filter(frequency == 2)
+  
+p2 <- ggplot(data.Q2B,aes(x = factor(class, levels = c("Kleine Unternehmen","Mittlere Unternehmen","Großunternehmen"),labels = c("Small","Middle","Big")),y = percent))+
+geom_boxplot(fill = "#0072B2", colour = "#000000")+
+labs(x = "Size of organisation", y = "Percent of organisations of the same size engaged",
+     title = "Frequency : In particular cases")
+
+data.Q2C <- data.Q2 %>%
+  filter(frequency == 3)
+  
+p3 <- ggplot(data.Q2C,aes(x = factor(class, levels = c("Kleine Unternehmen","Mittlere Unternehmen","Großunternehmen"),labels = c("Small","Middle","Big")),y = percent))+
+geom_boxplot(fill = "#D55E00", colour = "#000000")+
+labs(x = "Size of organisation", y = "Percent of organisations of the same size engaged",
+     title = "Frequency : Regular")
+
+p1 + p2 + p3
 ```
 
+```{r  data.Q2}
 
 
-
+```
