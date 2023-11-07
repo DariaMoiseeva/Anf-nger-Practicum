@@ -44,9 +44,10 @@ geom_col(position ="dodge") +
 labs(x = "Size of organisation", y = "Percent of organisations engaged", 
 title = "Frequency of corporate volunteering activities
 in relationship to the size of a company") +
+scale_fill_manual(name ="Frequency of engagement :",labels = 
+c("No Answer","No Information","At no time","In particular cases","Regular"), values = cbPalette)+
 scale_fill_discrete(name ="Frequency of engagement :",labels = 
-c("No Answer","No Information","At no time","In particular cases","Regular"))+
-scale_fill_manual(values = cbPalette)
+c("No Answer","No Information","At no time","In particular cases","Regular"))
 
 data.Q2A <- data.Q2 %>%
   filter(frequency == 1)
