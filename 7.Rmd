@@ -33,9 +33,9 @@ data$participation <- factor(data$participation,
                              levels = c(1, 2),
                              labels = c("Often", "Sometimes"))
 
-# 对于每一个挑战创建一个图表，只包括为 TRUE 的数据
+# select TRUE
 for(i in 2:8) {
-  # 筛选出当前挑战为 TRUE 的行
+
   filtered_data <- data[data[[i]] == TRUE, c(1, i)]
   
   p <- ggplot(filtered_data, aes_string(x = names(filtered_data)[2], fill = "participation")) +
@@ -51,18 +51,18 @@ library(ggplot2)
 library(reshape2)
 library(dplyr)
 
-# 将数据转换为长格式
+
 data_long <- melt(data, id.vars = "participation", variable.name = "challenge", value.name = "presence")
 data_long <- data_long[data_long$presence == TRUE, ]
 
-# 计算每个挑战的百分比
+# caculate the percentage 
 data_percentage <- data_long %>%
   group_by(challenge, participation) %>%
   summarise(count = n()) %>%
   mutate(total = sum(count),
          percent = count / total * 100)
 
-# 绘制堆叠条形图
+
 ggplot(data_percentage, aes(fill = participation, y = percent, x = challenge)) +
   geom_bar(position = "stack", stat = "identity") +
   labs(title = "Participation in Challenges by Percentage",
