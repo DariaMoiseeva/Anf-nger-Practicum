@@ -1,0 +1,81 @@
+---
+title: "Q6"
+author: "Tangqian Zhou 12626391"
+date: "2023-11-14"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+service_data <- c("Unknown" = 6, "Don't know" = 89, "<25%" = 456, "25-49%" = 155, "50-74%" = 39, "75%+" = 23)
+manufacturing_data <- c("Unknown" = 1, "Don't know" = 29, "<25%" = 249, "25-49%" = 63, "50-74%" = 16, "75%+" = 4)
+service_df <- data.frame(Category = names(service_data), Count = service_data)
+manufacturing_df <- data.frame(Category = names(manufacturing_data), Count = manufacturing_data)
+service_df$Percentage <- as.numeric(gsub("[^0-9.]", "", service_df$Category)) / 100
+manufacturing_df$Percentage <- as.numeric(gsub("[^0-9.]", "", manufacturing_df$Category)) / 100
+service_model <- lm(Percentage ~ Count, data = service_df)
+manufacturing_model <- lm(Percentage ~ Count, data = manufacturing_df)
+new_data_service <- data.frame(Count = 100)
+new_data_manufacturing <- data.frame(Count = 100)
+prediction_service <- predict(service_model, newdata = new_data_service)
+prediction_manufacturing <- predict(manufacturing_model, newdata = new_data_manufacturing)
+print(prediction_service)
+print(prediction_manufacturing)
+```
+```{r}
+library(readxl)
+wholeSet <- read_excel("MUE.2022.for.LMU.xlsx")
+data <- wholeSet[, c(2, 6, 7, 8)]
+colnames(data) <- c("company_size", "activity1", "activity2", "activity3")
+library(ggplot2)
+library(tidyr)
+library(ggplot2)
+library(dplyr)
+data <- data %>%
+  mutate(across(starts_with("activity"), ~ . %in% c(1, 2)))  
+data
+data_long <- data %>%
+  pivot_longer(cols = starts_with("activity"), 
+               names_to = "activity", 
+               values_to = "participated") %>%
+  group_by(company_size, activity) %>%
+  summarise(count = n(), 
+            participated_count = sum(participated)) %>%
+  ungroup()
+data_long
+data_long<-data_long%>%mutate(percentage=participated_count/count)
+head(data_long)
+str(data_long)
+data_long$company_size<-as.factor(data_long$company_size)
+data_long$activity<-as.factor(data_long$activity)
+model<-lm(percentage ~ company_size * activity,data=data_long)
+print(summary(model))
+new_data<-expand.grid(company_size=levels(data_long$company_size),activity=levels(data_long$activity))
+predictions<-predict(model,newdata = new_data)
+predictions
+result<-cbind(new_data,predictions)
+print(result)
+```
+
