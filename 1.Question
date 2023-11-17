@@ -1,32 +1,26 @@
 library(readxl)
 wholeSet <- read_excel("~/lmu/project/MUE.2022.for.LMU-2.xlsx")
-data <- wholeSet[, c(2, 6, 7, 8)]
-colnames(data) <- c("company_size", "activity1", "activity2", "activity3")
-library(ggplot2)
+data <- wholeSet[, c(85, 6, 7, 8)]
+colnames(data) <- c("class", "activity1", "activity2", "activity3")
 library(tidyr)
 library(ggplot2)
 library(dplyr)
-data <- data %>%
-  mutate(across(starts_with("activity"), ~ . %in% c(1, 2)))  
+library(tidyverse)
 
 
-data_long <- data %>%
-  pivot_longer(cols = starts_with("activity"), 
-               names_to = "activity", 
-               values_to = "participated") %>%
-  group_by(company_size, activity) %>%
-  summarise(count = n(), 
-            participated_count = sum(participated)) %>%
-  mutate(percentage = participated_count / count)
+df <- data
 
-ggplot(data_long, aes(x = as.factor(company_size), y = percentage, fill = activity)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  scale_y_continuous(labels = scales::percent_format()) +
-  labs(x = "Company Size", 
-       y = "Percentage Participated", 
-       fill = "Activity") +
+df_long <- df %>%
+  gather(key = "activity", value = "participation", activity1, activity2, activity3)
+
+
+df_long <- df_long %>%
+  filter(participation == 1 | participation == 2)
+ggplot(df_long, aes(x = class, fill = activity)) +
+  geom_bar(position = "dodge") +
+  labs(x = "Company Size", y = "Number of Participations", fill = "Activity") +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  ggtitle("Corporate Volunteering Activities by Company Size")
 
 #  Activity Participation: There's a visible trend that participation in activities 
 #  varies with company size.
