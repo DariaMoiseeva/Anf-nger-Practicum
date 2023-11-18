@@ -1,0 +1,55 @@
+---
+title: "q3.2"
+author: "Name:Fengyan Shen Nummer:12665659"
+date: "2023-11-18"
+output: pdf_document
+---
+```{r}
+library(readxl)
+library(dplyr)
+library(ggplot2)
+data<-read_excel("MUE.2022.for.LMU.xlsx")
+dselect <- data %>% select(SERIAL,A003)
+#print(dselect)
+replace <- c("1"="Bauwirtschaft","2"="Bergbau / Metall","3"="Bildung / Weiterbildung","4"="Chemie / Pharma","5"="Elektrotechnik","6"="Energie / Wasser","7"="Fahrzeugbau / -Zulieferer","8"="Finanzen / Versicherung","9"="Gastgewerbe / Einzelhandel","10"="Gesundheit / Sozialwesen","11"="Grundstücks- / Wohnungswesen","12"="Handel","13"="nformationstechnik / Kommunikation","14"="Kunst / Unterhaltung / Erholung","15"="Land- / Forstwirtschaft","16"="Maschinenbau","17"="Nahrungsmittelindustrie","18"="Verkehr / Logistik / Transport","19"="Sonstige Dienstleistungsbranchel","20"="Sonstiges verarbeitendes Gewerbe","21"="Sonstige Branche:")
+dselect$A003 <- replace[as.character(dselect$A003)]
+#print(dselect)
+industry_counts <- as.data.frame(table(dselect$A003)) 
+#industry_counts
+ggplot(industry_counts, aes(y=Freq,x= Var1, fill=Var1)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Industry", y = "Company Count") +
+  ggtitle("Distribution of Companies Across Industries") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(legend.text = element_text(size = 2))
+```
+ggplot(industry_counts, aes(y=counts,x= industry,fill= industry)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Industry", y = "Company Count") +
+  ggtitle("Distribution of Companies Across Industries") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
