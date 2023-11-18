@@ -29,6 +29,8 @@ plot(pressure)
 ```{r}
 library(readxl)
 library(dplyr)
+library(ggplot2)
+library(tidyr)
 data<-read_excel("MUE.2022.for.LMU.xlsx")
 data
 data$E001<-as.character(data$E001)
@@ -52,16 +54,18 @@ service_counts
 manufacturing_counts <- table(manufacturing$E001)
 manufacturing_counts
 all_service_counts <- merge(all_categories, data.frame(E001 = names(service_counts), Count = as.numeric(service_counts)))
+all_service_counts[is.na(all_service_counts)]<-0
 all_service_counts
 all_manufacturing_counts <- merge(all_categories, data.frame(E001 = names(manufacturing_counts), Count = as.numeric(manufacturing_counts)))
+all_manufacturing_counts[is.na(all_manufacturing_counts)]<-0
 all_manufacturing_counts
 all_service_counts$E001<-factor(all_service_counts$E001,levels = c("nicht beantwortet","Weiss nicht","weniger als 25%", "25-49%", "50-74%", "75% und mehr"))
 all_manufacturing_counts$E001<-factor(all_manufacturing_counts$E001,levels = c("nicht beantwortet","Weiss nicht","weniger als 25%", "25-49%", "50-74%", "75% und mehr"))
 all_categories$E001<-factor(all_categories$E001,levels = factor_levels)
 all_categories$E001
-all_service_counts$Count[is.na(all_service_counts$Count)] <- 0
+all_service_counts<-na.omit(all_service_counts)
 all_service_counts
-all_manufacturing_counts$Count[is.na(all_manufacturing_counts$Count)] <- 0
+all_manufacturing_counts<-na.omit(all_manufacturing_counts)
 all_manufacturing_counts
 n<-nrow(all_service_counts)
 new_order<-c(4,5,6,1,2,3)
@@ -69,15 +73,33 @@ all_service_counts_new<-all_service_counts[new_order, ]
 all_service_counts_new
 all_manufacturing_counts_new<-all_manufacturing_counts[new_order, ]
 all_manufacturing_counts_new
-barplot(rbind(all_service_counts_new$Count, all_manufacturing_counts_new$Count),
-        beside = TRUE,
-        names.arg =c("nicht beantwortet","Weiss nicht","weniger als 25%", "25-49%", "50-74%", "75% und mehr") ,
-        col = c("blue", "green"),
-        legend.text = c("Service Industry", "Manufacturing Industry"),
-        main = "Difference in the number of engaged employees in the service industry
-versus the manufacturing industry",
-        xlab = "Number Ranges",
-        ylab = "Number of engaged employees"
+service_total <- nrow(service)
+manufacturing_total <- nrow(manufacturing)
+service_total
+manufacturing_total
+service_percentages <- prop.table(table(service$E001)) * 100
+manufacturing_percentages <- prop.table(table(manufacturing$E001)) * 100
+percentages_df <- data.frame(
+  Response = factor(names(service_percentages), levels = names(service_percentages)),
+  Service_Industry = as.numeric(service_percentages),
+  Manufacturing_Industry = as.numeric(manufacturing_percentages)
 )
+percentages_df <- percentages_df %>%
+  pivot_longer(cols = c("Service_Industry", "Manufacturing_Industry"), names_to = "Industry", values_to = "Percentage")
+order <- c("weniger als 25%", "25-49%", "50-74%", "75% und mehr", "Weiss nicht", "nicht beantwortet")
+percentages_df$Response <- factor(percentages_df$Response, levels = order)
+percentages_df<-na.omit(percentages_df)
+ggplot(percentages_df, aes(x = Response, y = Percentage, fill = Industry)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.7) +
+  labs(
+    title = "Difference in the number of engaged employees in the service industry
+versus the manufacturing industry",
+    x = "Number Range",
+    y = "Percentage"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
 ```
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
