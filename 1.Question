@@ -10,17 +10,27 @@ library(tidyverse)
 
 df <- data
 
-df_long <- df %>%
-  gather(key = "activity", value = "participation", activity1, activity2, activity3)
+df_percentage <- df_long %>%
+  group_by(class, activity) %>%
+  summarise(count = n()) %>%
+  group_by(class) %>%
+  mutate(percentage = count / sum(count))
 
-
-df_long <- df_long %>%
-  filter(participation == 1 | participation == 2)
-ggplot(df_long, aes(x = class, fill = activity)) +
-  geom_bar(position = "dodge") +
-  labs(x = "Company Size", y = "Number of Participations", fill = "Activity") +
+# 创建堆叠的条形图来显示百分比
+ggplot(df_percentage, aes(x = class, y = percentage, fill = activity)) +
+  geom_bar(stat = "identity", position = position_fill()) +
+  scale_fill_manual(
+    values = c("blue", "green", "red"), # Replace with your desired colors
+    labels = c(
+      "Get involved when a specific occasion arises",
+      "Free services",
+      "Freistellungen von Mitarbeitenden"
+    )
+  ) +
+  labs(x = "Company Size", y = "Percentage of Participations", fill = "Activity") +
   theme_minimal() +
-  ggtitle("Corporate Volunteering Activities by Company Size")
+  ggtitle("Corporate Volunteering Activities by Company Size (Percentage)") +
+  scale_y_continuous(labels = scales::percent_format())
 
 #  Activity Participation: There's a visible trend that participation in activities 
 #  varies with company size.
