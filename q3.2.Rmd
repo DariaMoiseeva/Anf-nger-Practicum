@@ -1,0 +1,74 @@
+---
+title: "q3.2"
+author: "Name:Fengyan Shen Nummer:12665659"
+date: "2023-11-18"
+output: pdf_document
+---
+```{r}
+library(readxl)
+library(dplyr)
+library(ggplot2)
+data<-read_excel("MUE.2022.for.LMU.xlsx")
+dselect <- data %>% select(SERIAL,A003, E001)
+dselect <- na.omit(dselect)
+print(dselect)
+replace <- c("1"="Bauwirtschaft","2"="Bergbau / Metall","3"="Bildung / Weiterbildung","4"="Chemie / Pharma","5"="Elektrotechnik","6"="Energie / Wasser","7"="Fahrzeugbau / -Zulieferer","8"="Finanzen / Versicherung","9"="Gastgewerbe / Einzelhandel","10"="Gesundheit / Sozialwesen","11"="Grundstücks- / Wohnungswesen","12"="Handel","13"="nformationstechnik / Kommunikation","14"="Kunst / Unterhaltung / Erholung","15"="Land- / Forstwirtschaft","16"="Maschinenbau","17"="Nahrungsmittelindustrie","18"="Verkehr / Logistik / Transport","19"="Sonstige Dienstleistungsbranchel","20"="Sonstiges verarbeitendes Gewerbe","21"="Sonstige Branche:")
+replace2 <- c("1"="weniger als 25 %","2"="25-49 %","3"="50-74 %","4"="75 % und mehr")
+dselect$A003 <- replace[as.character(dselect$A003)]
+#print(dselect)
+dselect$E001 <- replace2[as.character(dselect$E001)]
+dselect <- na.omit(dselect)
+names(dselect) <- c("Company", "Industry", "Strength")
+dselect
+#industry_counts <- as.data.frame(table(dselect$A003)) 
+#industry_counts
+dselect$Strength <- factor(dselect$Strength, levels = c("weniger als 25 %", "25-49 %", "50-74 %", "75 % und mehr"))
+filtered_data <- dselect %>%
+  filter(grepl("75 % und mehr", Strength) | as.numeric(gsub("[^0-9]+", "", Strength)) > 50)
+# 统计每个 Strength 中不同行业的数量
+plot_data <- dselect %>%
+  group_by(Industry, Strength) %>%
+  summarize(Count = n(),.groups = 'drop')
+
+ggplot(plot_data, aes(x = Industry, y = Count, fill = Industry)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = Count), position = position_stack(vjust = 0.5), size = 3) +
+  labs(title = "Do companies within specific industries show a stronger commitment to corporate
+volunteering compared to others? ",
+       x = "Industry",
+       y = "Count") +
+   theme(legend.text = element_text(size = 3)) +
+   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 6)) +
+  facet_wrap(~Strength, scales = "free_y") 
+```
+ggplot(industry_counts, aes(y=counts,x= industry,fill= industry)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Industry", y = "Company Count") +
+  ggtitle("Distribution of Companies Across Industries") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
