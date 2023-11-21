@@ -61,16 +61,16 @@ data_percentage <- data_long %>%
 # 绘制堆叠条形图
 ggplot(data_percentage, aes(fill = participation, y = percent, x = challenge)) +
   geom_bar(position = "stack", stat = "identity") +
-  scale_x_discrete(labels = c("Geeignete Angebote 
-                              zur Beteiligung finden", 
-                              "Mitarbeitende zur 
-                              Teilnahme gewinnen", 
-                              "Koordination der Mitarbeitenden", 
-                              "Begrenzte Zeit von Mitarbeitenden", 
-                              "Kosten des Programms", 
-                              "Fehlende Unterstützung
-                              der Geschäftsführung", 
-                              "Sonstiges")) +
+   scale_x_discrete(labels = c("Suitable offers
+                              find participation", 
+                              "employees to
+                              Win participation", 
+                              "Coordination of employees", 
+                              "Limited time of employees", 
+                              "Cost of the program", 
+                              "Lack of support
+                              the management", 
+                              "Others")) +
   labs(title = "Participation in Challenges by Percentage",
        x = "Challenge",
        y = "Percentage") +
