@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(readxl)
-wholeSet <- read_excel("~/lmu/project/MUE.2022.for.LMU.xlsx")
+wholeSet <- read_excel("MUE.2022.for.LMU.xlsx")
 data <- wholeSet[, c(60, 62, 63, 64, 65, 66, 67, 68)]
 data <- na.omit(data) # delete rows with NA
 todelete <- c()
