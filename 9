@@ -1,5 +1,5 @@
 library(readxl)
-wholeSet <- read_excel("~/lmu/project/MUE.2022.for.LMU-2.xlsx")
+wholeSet <- read_excel("~/lmu/project/MUE.2022.for.LMU.xlsx")
 data <- wholeSet[, c(59, 72)]
 data <- na.omit(data) # delete rows with NA
 todelete <- c()
@@ -36,7 +36,6 @@ df <- df %>%
   )) %>%
   mutate(year_interval = factor(year_interval, levels = c("<1800", "1800-1850", "1850-1900", "1900-1950", "1950-2000", ">2000")))
 
-# 创建图表
 ggplot(df, aes(x = year_interval, fill = factor(engagement_category))) +
   geom_bar(position = "fill") +
   scale_y_continuous(labels = scales::percent_format()) +
