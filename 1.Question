@@ -16,7 +16,7 @@ df_percentage <- df_long %>%
   group_by(class) %>%
   mutate(percentage = count / sum(count))
 
-# 创建堆叠的条形图来显示百分比
+# build grahic to reveal the percentage
 ggplot(df_percentage, aes(x = class, y = percentage, fill = activity)) +
   geom_bar(stat = "identity", position = position_fill()) +
   scale_fill_manual(
