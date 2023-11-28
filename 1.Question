@@ -1,5 +1,5 @@
 library(readxl)
-wholeSet <- read_excel("~/lmu/project/MUE.2022.for.LMU.xlsx")
+wholeSet <- read_excel("MUE.2022.for.LMU.xlsx")
 data <- wholeSet[, c(85, 6, 7, 8)]
 colnames(data) <- c("class", "activity1", "activity2", "activity3")
 library(tidyr)
