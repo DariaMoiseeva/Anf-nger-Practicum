@@ -33,6 +33,7 @@ library(ggplot2)
 library(tidyr)
 data<-read_excel("MUE.2022.for.LMU.xlsx")
 data
+data <- data %>% filter(!(E001 %in% c(-1, -9)))
 data$E001<-as.character(data$E001)
 data$E001 <- case_when(
   data$E001 == 1 ~ "weniger als 25%",
@@ -47,7 +48,7 @@ service<-subset(data,A003 %in% c(1,3,8,9,10,11,14,18,19))
 service
 manufacturing<-subset(data,A003 %in% c(2,4,5,6,7,16,17,20))
 manufacturing
-all_categories <- data.frame(E001 = factor(c("nicht beantwortet","Weiss nicht","weniger als 25%", "25-49%", "50-74%", "75% und mehr"),levels=c("nicht beantwortet","Weiss nicht","weniger als 25%", "25-49%", "50-74%", "75% und mehr")))
+all_categories <- data.frame(E001 = factor(c("weniger als 25%", "25-49%", "50-74%", "75% und mehr"),levels=c("weniger als 25%", "25-49%", "50-74%", "75% und mehr")))
 all_categories
 service_counts <- table(service$E001)
 service_counts
@@ -59,7 +60,7 @@ all_service_counts
 all_manufacturing_counts <- merge(all_categories, data.frame(E001 = names(manufacturing_counts), Count = as.numeric(manufacturing_counts)))
 all_manufacturing_counts[is.na(all_manufacturing_counts)]<-0
 all_manufacturing_counts
-all_service_counts$E001<-factor(all_service_counts$E001,levels = c("nicht beantwortet","Weiss nicht","weniger als 25%", "25-49%", "50-74%", "75% und mehr"))
+all_service_counts$E001<-factor(all_service_counts$E001,levels = c("weniger als 25%", "25-49%", "50-74%", "75% und mehr"))
 all_manufacturing_counts$E001<-factor(all_manufacturing_counts$E001,levels = c("nicht beantwortet","Weiss nicht","weniger als 25%", "25-49%", "50-74%", "75% und mehr"))
 all_categories$E001<-factor(all_categories$E001,levels = factor_levels)
 all_categories$E001
@@ -86,9 +87,10 @@ percentages_df <- data.frame(
 )
 percentages_df <- percentages_df %>%
   pivot_longer(cols = c("Service_Industry", "Manufacturing_Industry"), names_to = "Industry", values_to = "Percentage")
-order <- c("weniger als 25%", "25-49%", "50-74%", "75% und mehr", "Weiss nicht", "nicht beantwortet")
+order <- c("weniger als 25%", "25-49%", "50-74%", "75% und mehr")
 percentages_df$Response <- factor(percentages_df$Response, levels = order)
 percentages_df<-na.omit(percentages_df)
+percentages_df
 ggplot(percentages_df, aes(x = Response, y = Percentage, fill = Industry)) +
   geom_bar(stat = "identity", position = "dodge", width = 0.7) +
   labs(
@@ -99,6 +101,5 @@ versus the manufacturing industry",
   ) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
 ```
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
