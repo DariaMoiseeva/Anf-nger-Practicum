@@ -62,7 +62,7 @@ all_manufacturing_counts[is.na(all_manufacturing_counts)]<-0
 all_manufacturing_counts
 all_service_counts$E001<-factor(all_service_counts$E001,levels = c("weniger als 25%", "25-49%", "50-74%", "75% und mehr"))
 all_manufacturing_counts$E001<-factor(all_manufacturing_counts$E001,levels = c("nicht beantwortet","Weiss nicht","weniger als 25%", "25-49%", "50-74%", "75% und mehr"))
-all_categories$E001<-factor(all_categories$E001,levels = factor_levels)
+all_categories$E001<-factor(all_categories$E001)
 all_categories$E001
 all_service_counts<-na.omit(all_service_counts)
 all_service_counts
