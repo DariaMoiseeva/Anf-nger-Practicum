@@ -1,0 +1,114 @@
+---
+title: '10'
+author: "Tangqian Zhou 12626391"
+date: "2023-11-28"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+library(readxl)
+library(dplyr)
+data <- read_excel("MUE.2022.for.LMU.xlsx")
+data1 <- data %>% filter(!(E001 %in% c(-1, -9)))
+selbstständig<-data1[data1$N004_01 == TRUE, ]
+craftcompany<-data1[data1$N004_02 == TRUE, ]
+mediumsizedcompany<-data1[data1$N004_03 == TRUE, ]
+familycompany<-data1[data1$N004_04 == TRUE, ]
+konzern<-data1[data1$N004_05 == TRUE, ]
+startup<-data1[data1$N004_06 == TRUE, ]
+foundationcompany<-data1[data1$N004_08 == TRUE, ]
+E001_selbstständiSg<-na.omit(selbstständig$E001)
+E001_craftcompany<-na.omit(craftcompany$E001)
+E001_mediumsizedcompany<-na.omit(mediumsizedcompany$E001)
+E001_familycompany<-na.omit(familycompany$E001)
+E001_konzern<-na.omit(konzern$E001)
+E001_startup<-na.omit(startup$E001)
+E001_foundationcompany<-na.omit(foundationcompany$E001)
+count_df <- data.frame(Company_Type = c("selbstständig", "craftcompany", "mediumsizedcompany", "familycompany", "konzern", "startup", "foundationcompany"),
+E001_1 = c(
+     sum(E001_selbstständig == 1),
+     sum(E001_craftcompany == 1),
+     sum(E001_mediumsizedcompany == 1),
+     sum(E001_familycompany == 1),
+     sum(E001_konzern == 1),
+     sum(E001_startup == 1),
+     sum(E001_foundationcompany == 1)
+   ),
+   E001_2 = c(
+     sum(E001_selbstständig == 2),
+     sum(E001_craftcompany == 2),
+     sum(E001_mediumsizedcompany == 2),
+     sum(E001_familycompany == 2),
+     sum(E001_konzern == 2),
+     sum(E001_startup == 2),
+     sum(E001_foundationcompany == 2)
+   ),
+   E001_3 = c(
+     sum(E001_selbstständig == 3),
+     sum(E001_craftcompany == 3),
+     sum(E001_mediumsizedcompany == 3),
+     sum(E001_familycompany == 3),
+     sum(E001_konzern == 3),
+     sum(E001_startup == 3),
+     sum(E001_foundationcompany == 3)
+   ),
+   E001_4 = c(
+     sum(E001_selbstständig == 4),
+     sum(E001_craftcompany == 4),
+     sum(E001_mediumsizedcompany == 4),
+     sum(E001_familycompany == 4),
+     sum(E001_konzern == 4),
+     sum(E001_startup == 4),
+     sum(E001_foundationcompany == 4)
+   )
+ )
+count_df
+count_df$Total <- rowSums(count_df[c("E001_1", "E001_2", "E001_3", "E001_4")])
+count_df$E001_1_percentage <- count_df$E001_1 / count_df$Total * 100
+count_df$E001_2_percentage <- count_df$E001_2 / count_df$Total * 100
+count_df$E001_3_percentage <- count_df$E001_3 / count_df$Total * 100
+count_df$E001_4_percentage <- count_df$E001_4 / count_df$Total * 100
+count_df
+plot_data <- count_df %>%
+  select(Company_Type, E001_1_percentage, E001_2_percentage, E001_3_percentage, E001_4_percentage) %>%
+  tidyr::gather(key = "E001_value", value = "Percentage", -Company_Type)
+library(ggplot2)
+ggplot(plot_data, aes(x = reorder(E001_value, Percentage, FUN = median), y = Percentage, fill = Company_Type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(
+    title = "Percentage of engaged employees in volunteering programs",
+    x = "Percentage categories",
+    y = "Percentage",
+    fill = "Company Type"
+  ) +
+  scale_x_discrete(labels = c("E001_1_percentage" = "weniger als 25%", "E001_2_percentage" = "25-49%", "E001_3_percentage" = "50-74%", "E001_4_percentage" = "75% und mehr")) +
+  scale_fill_manual(
+    values = c("selbstständig" = "blue", "craftcompany" = "red", "mediumsizedcompany" = "green", "familycompany" = "yellow", "konzern" = "purple", "startup" = "orange", "foundationcompany" = "brown"),
+    labels = c("selbstständig" = "Self-employed", "craftcompany" = "Craft company", "mediumsizedcompany" = "Medium-sized company", "familycompany" = "Family company", "konzern" = "Corporation", "startup" = "Startup", "foundationcompany" = "Foundation company")
+  ) +
+  theme_minimal()
+```
+
