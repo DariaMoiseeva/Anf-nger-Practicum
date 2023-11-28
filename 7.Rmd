@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(readxl)
-wholeSet <- read_excel("~/lmu/project/MUE.2022.for.LMU-2.xlsx")
+wholeSet <- read_excel("~/lmu/project/MUE.2022.for.LMU.xlsx")
 data <- wholeSet[, c(60, 62, 63, 64, 65, 66, 67, 68)]
 data <- na.omit(data) # delete rows with NA
 todelete <- c()
@@ -29,9 +29,9 @@ data$participation <- factor(data$participation,
                              levels = c(1, 2, 3, 4, -1),
                              labels = c("More than once a month", "Once a quartal", "Once every half a year", "Once a year", "Not regularly"))
 
-# 对于每一个挑战创建一个图表，只包括为 TRUE 的数据
+# generate a graph for each challenge and only includes TRUE
 for(i in 2:8) {
-  # 筛选出当前挑战为 TRUE 的行
+  # select lines to be TRUE 
   filtered_data <- data[data[[i]] == TRUE, c(1, i)]
   
   p <- ggplot(filtered_data, aes_string(x = names(filtered_data)[2], fill = "participation")) +
@@ -47,18 +47,18 @@ library(ggplot2)
 library(reshape2)
 library(dplyr)
 
-# 将数据转换为长格式
+# change the data to long form 
 data_long <- melt(data, id.vars = "participation", variable.name = "challenge", value.name = "presence")
 data_long <- data_long[data_long$presence == TRUE, ]
 
-# 计算每个挑战的百分比
+# caculate the percentage of each challenge
 data_percentage <- data_long %>%
   group_by(challenge, participation) %>%
   summarise(count = n()) %>%
   mutate(total = sum(count),
          percent = count / total * 100)
 
-# 绘制堆叠条形图
+# plot
 ggplot(data_percentage, aes(fill = participation, y = percent, x = challenge)) +
   geom_bar(position = "stack", stat = "identity") +
    scale_x_discrete(labels = c("Suitable offers
