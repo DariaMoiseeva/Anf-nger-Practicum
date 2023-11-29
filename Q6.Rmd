@@ -63,7 +63,7 @@ data2$class <- factor(data2$class)
 data2$E002 <- factor(data2$E002)
 ggplot(data2, aes(x = class, y = Percentage, fill = E002)) +
   geom_bar(stat = "identity", position = "dodge") +
-  labs(title = "Frequencies of corporate volunteering events based on ompany size",
+  labs(title = "Frequencies of corporate volunteering events based on company size",
        x = "Company Size",
        y = "Precentage Of Frequency",
        fill = "Frequency") +
@@ -98,12 +98,12 @@ library(ggplot2)
 data3$A003 <- factor(data3$A003)
 data3$E002 <- factor(data3$E002)
 ggplot(data3, aes(x = A003, y = Percentage, fill = E002)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity",position = "dodge") +
   labs(title = "Frequencies of corporate volunteering events based on industry type",
        x = "Industry Type",
        y = "Percentage",
        fill = "Frequency") +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))  
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))   
 ```
 
