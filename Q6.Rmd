@@ -29,7 +29,9 @@ plot(pressure)
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 ```{r}
+library(magrittr)
 library(readxl)
+library(dplyr)
 data <- read_excel("MUE.2022.for.LMU.xlsx")
 data1<- data%>%select(class, E002)
 data2<-data1%>%filter(!E002%in%c('-2','-9'))
@@ -54,21 +56,23 @@ data2 <- data2 %>%
   ungroup() %>%
   mutate(Percentage = Count / sum(Count) )
 data2
-model <- lm(Percentage ~ poly(as.numeric(E002), 2, raw = TRUE) + class, data = data2)
-prediction_data <- expand.grid(class = unique(data2$class), E002 = unique(data2$E002))
-prediction_data$Percentage <- predict(model, newdata = prediction_data)
-prediction_data
-ggplot(data2, aes(x = class, y = Percentage, color = factor(E002))) +
-  geom_point(position = position_dodge(width = 0.5)) +
-  geom_line(data = prediction_data, aes(group = E002, color = factor(E002)), size = 1) +
-  labs(title = "Predictions of frequencies of corporate volunteering events based on ompany size ",
-       x = "Company size",
-       y = "Percentage",
-       color="Frequency") +
+new_data <- expand.grid(class = levels(data2$class), E002 = levels(data2$E002))
+new_data$Percentage <- predict(model, newdata = new_data)
+library(ggplot2)
+data2$class <- factor(data2$class)
+data2$E002 <- factor(data2$E002)
+ggplot(data2, aes(x = class, y = Percentage, fill = E002)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Frequencies of corporate volunteering events based on ompany size",
+       x = "Company Size",
+       y = "Precentage Of Frequency",
+       fill = "Frequency") +
   theme_minimal()
 ```
 ```{r}
+library(magrittr)
 library(readxl)
+library(dplyr)
 data <- read_excel("MUE.2022.for.LMU.xlsx")
 data1<- data%>%select(A003, E002)
 data2<-data1%>%filter(!E002%in%c('-2','-9'))
@@ -90,17 +94,16 @@ data3 <- data3 %>%
   mutate(Percentage = Count / sum(Count) * 100)
 data3<-na.omit(data3)
 data3
-model <- lm(Percentage ~ poly(as.numeric(E002), 2, raw = TRUE) + A003, data = data3)
-prediction_data <- expand.grid(A003 = unique(data3$A003), E002 = unique(data3$E002))
-prediction_data$Percentage <- predict(model, newdata = prediction_data)
-prediction_data
-ggplot(data3, aes(x = A003, y = Percentage, color = factor(E002))) +
-  geom_point(position = position_dodge(width = 0.5)) +
-  geom_line(data = prediction_data, aes(group = E002, color = factor(E002)), size = 1) +
-  labs(title = "Predictions of frequencies of corporate volunteering events based on industry type",
+library(ggplot2)
+data3$A003 <- factor(data3$A003)
+data3$E002 <- factor(data3$E002)
+ggplot(data3, aes(x = A003, y = Percentage, fill = E002)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Frequencies of corporate volunteering events based on industry type",
        x = "Industry Type",
        y = "Percentage",
-       color = "Frequency") +
-  theme_minimal()
+       fill = "Frequency") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  
 ```
 
