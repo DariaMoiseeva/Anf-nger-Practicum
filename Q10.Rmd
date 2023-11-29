@@ -31,7 +31,7 @@ Note that the `echo = FALSE` parameter was added to the code chunk to prevent pr
 ```{r}
 library(readxl)
 library(dplyr)
-data <- read_excel("MUE.2022.for.LMU.xlsx")
+data<-read_excel("MUE.2022.for.LMU.xlsx")
 data1 <- data %>% filter(!(E001 %in% c(-1, -9)))
 selbstständig<-data1[data1$N004_01 == TRUE, ]
 craftcompany<-data1[data1$N004_02 == TRUE, ]
@@ -95,20 +95,18 @@ count_df
 plot_data <- count_df %>%
   select(Company_Type, E001_1_percentage, E001_2_percentage, E001_3_percentage, E001_4_percentage) %>%
   tidyr::gather(key = "E001_value", value = "Percentage", -Company_Type)
+library(viridis)
 library(ggplot2)
 ggplot(plot_data, aes(x = reorder(E001_value, Percentage, FUN = median), y = Percentage, fill = Company_Type)) +
   geom_bar(stat = "identity", position = "dodge") +
   labs(
     title = "Percentage of engaged employees in volunteering programs",
-    x = "Percentage categories",
+    x = "Number Of Engaged Employees",
     y = "Percentage",
     fill = "Company Type"
   ) +
   scale_x_discrete(labels = c("E001_1_percentage" = "weniger als 25%", "E001_2_percentage" = "25-49%", "E001_3_percentage" = "50-74%", "E001_4_percentage" = "75% und mehr")) +
-  scale_fill_manual(
-    values = c("selbstständig" = "blue", "craftcompany" = "red", "mediumsizedcompany" = "green", "familycompany" = "yellow", "konzern" = "purple", "startup" = "orange", "foundationcompany" = "brown"),
-    labels = c("selbstständig" = "Self-employed", "craftcompany" = "Craft company", "mediumsizedcompany" = "Medium-sized company", "familycompany" = "Family company", "konzern" = "Corporation", "startup" = "Startup", "foundationcompany" = "Foundation company")
-  ) +
+  scale_fill_viridis_d(option = "magma", begin = 0.2, end = 0.8) +  
   theme_minimal()
 ```
 
