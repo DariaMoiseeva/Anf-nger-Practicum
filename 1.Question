@@ -8,9 +8,18 @@ library(tidyverse)
 wholeSet <- read_excel("MUE.2022.for.LMU.xlsx")
 data <- wholeSet[, c(85, 6, 7, 8)]
 colnames(data) <- c("class", "activity1", "activity2", "activity3")
-
+df <- data
+for (i in 1:nrow(df)) {
+  if (df[i, 1] == "Kleine Unternehmen") {
+    df[i, 1] <- "Small Companies"
+  } else if (df[i, 1] == "Mittlere Unternehmen") {
+    df[i, 1] <- "Medium Companies"
+  } else if (df[i, 1] == "Großunternehmen") {
+    df[i, 1] <- "Large Companies"
+  }
+}
 # change the data into long term
-df_long <- data %>%
+df_long <- df %>%
   gather(key = "activity", value = "participation", activity1, activity2, activity3)
 
 # choose the data of ones that have participated the activity
