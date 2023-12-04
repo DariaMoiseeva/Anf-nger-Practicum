@@ -39,9 +39,12 @@ ggplot(df_percentage, aes(x = class, y = percentage, fill = activity)) +
   scale_fill_manual(
     values = c("blue", "green", "red"),
     labels = c(
-      "Get involved when a specific occasion arises",
-      "Free services",
-      "Freistellungen von Mitarbeitenden"
+      "Taking action on specific occasions
+      (e.g., on-site help, local clean-up campaigns)",
+      "Free services
+      (e.g., contributing skills on a pro bono basis)",
+      "Employee release for volunteering
+      (e.g., voluntary engagement during working hours)"
     )
   ) +
   labs(x = "Company Size", y = "Percentage of Participations", fill = "Activity") +
