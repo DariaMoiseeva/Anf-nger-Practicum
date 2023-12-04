@@ -61,15 +61,15 @@ data_percentage <- data_long %>%
 # plot
 ggplot(data_percentage, aes(fill = participation, y = percent, x = challenge)) +
   geom_bar(position = "stack", stat = "identity") +
-   scale_x_discrete(labels = c("Suitable offers
-                              find participation", 
-                              "employees to
-                              Win participation", 
+   scale_x_discrete(labels = c("Find suitable
+                              participation offers", 
+                              "Win employees
+                              for participation", 
                               "Coordination of employees", 
                               "Limited time of employees", 
                               "Cost of the program", 
                               "Lack of support
-                              the management", 
+                              from the management", 
                               "Others")) +
   labs(title = "Participation in Challenges by Percentage",
        x = "Challenge",
