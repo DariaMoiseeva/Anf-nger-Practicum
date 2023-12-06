@@ -110,6 +110,6 @@ ggplot(plot_data, aes(x = reorder(E001_value, Percentage, FUN = median), y = Per
   theme_minimal()+
   scale_fill_viridis(discrete = TRUE, option = "D") 
 ```
-#Answer:No,Answer:No, As can be seen in the graph, family companies do not participate more in volunteer activities. The frequency of family companies participating in volunteer activities is almost the same as that of companies except startups, and startups are the type of company that participates most frequently.
+#Answer:No, As can be seen in the graph, family companies do not participate more in volunteer activities. The frequency of family companies participating in volunteer activities is almost the same as that of companies except startups, and startups are the type of company that participates most frequently.
 
 
