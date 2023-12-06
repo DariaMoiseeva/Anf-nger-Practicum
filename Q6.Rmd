@@ -161,4 +161,5 @@ ggplot(data3, aes(x = A003, y = Percentage, fill = E002)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   scale_fill_viridis(discrete = TRUE, option = "D")   
 ```
+Answer:No, because the number of firms at each frequency does not always follow the same trend across different firm sizes or industry types.
 
