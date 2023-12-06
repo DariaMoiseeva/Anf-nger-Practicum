@@ -103,4 +103,10 @@ versus the manufacturing industry",
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   scale_fill_viridis(discrete = TRUE, option = "D") 
 ```
+#Comments
+#Percentage: The number of companies as a proportion of the total number of companies in their industry type
+
+
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
