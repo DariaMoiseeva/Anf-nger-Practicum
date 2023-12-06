@@ -47,7 +47,7 @@ E001_familycompany<-na.omit(familycompany$E001)
 E001_konzern<-na.omit(konzern$E001)
 E001_startup<-na.omit(startup$E001)
 E001_foundationcompany<-na.omit(foundationcompany$E001)
-count_df <- data.frame(Company_Type = c("selbstständig", "craftcompany", "mediumsizedcompany", "familycompany", "konzern", "startup", "foundationcompany"),
+count_df <- data.frame(Company_Type = c("self-employed", "craftcompany", "mediumsizedcompany", "familycompany", "konzern", "startup", "foundationcompany"),
 E001_1 = c(
      sum(E001_selbstständig == 1),
      sum(E001_craftcompany == 1),
