@@ -105,7 +105,7 @@ ggplot(plot_data, aes(x = reorder(E001_value, Percentage, FUN = median), y = Per
     y = "Percentage",
     fill = "Company Type"
   ) +
-  scale_x_discrete(labels = c("E001_1_percentage" = "weniger als 25%", "E001_2_percentage" = "25-49%", "E001_3_percentage" = "50-74%", "E001_4_percentage" = "75% und mehr")) +
+  scale_x_discrete(labels = c("E001_1_percentage" = "less than 25%", "E001_2_percentage" = "25-49%", "E001_3_percentage" = "50-74%", "E001_4_percentage" = "75% and above")) +
   scale_fill_viridis_d(option = "magma", begin = 0.2, end = 0.8) +  
   theme_minimal()+
   scale_fill_viridis(discrete = TRUE, option = "D") 
