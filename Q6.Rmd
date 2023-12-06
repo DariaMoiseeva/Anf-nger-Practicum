@@ -59,15 +59,23 @@ data2
 new_data <- expand.grid(class = levels(data2$class), E002 = levels(data2$E002))
 new_data$Percentage <- predict(model, newdata = new_data)
 library(ggplot2)
+library(viridis)
 data2$class <- factor(data2$class)
 data2$E002 <- factor(data2$E002)
+data2$class<-factor(data2$class,levels=c("1","2","3"),labels=c("small","middle","big"))
+data2$E002 <- factor(data2$E002, levels = c("-1", "1", "2", "3", "4"),
+                     labels = c("Irregularly", "More than once a month",
+                                "Once per quarter", "Once per half-year",
+                                "Once a year"))
 ggplot(data2, aes(x = class, y = Percentage, fill = E002)) +
   geom_bar(stat = "identity", position = "dodge") +
   labs(title = "Frequencies of corporate volunteering events based on company size",
        x = "Company Size",
        y = "Precentage Of Frequency",
        fill = "Frequency") +
-  theme_minimal()
+  theme_minimal()+
+  scale_fill_viridis(discrete = TRUE, option = "D") +
+  scale_x_discrete(labels=c("small"="small","middle"="middle","big"="big"))
 ```
 ```{r}
 library(magrittr)
@@ -85,7 +93,7 @@ head(data3)
 library(tidyr)
 library(ggplot2)
 library(dplyr)
-library(tidyverse)
+library(tidyverse) 
 library(dplyr)
 data3 <- data3 %>%
   group_by(A003, E002) %>%
@@ -95,8 +103,54 @@ data3 <- data3 %>%
 data3<-na.omit(data3)
 data3
 library(ggplot2)
+library(viridis)
 data3$A003 <- factor(data3$A003)
 data3$E002 <- factor(data3$E002)
+library(magrittr)
+library(readxl)
+library(dplyr)
+data <- read_excel("MUE.2022.for.LMU.xlsx")
+data1<- data%>%select(A003, E002)
+data2<-data1%>%filter(!E002%in%c('-2','-9'))
+data3<-data2%>%filter(A003!=-9)
+data3$A003<-as.factor(data3$A003)
+data3$E002<-factor(data3$E002)
+data3<-na.omit(data3)
+data3
+head(data3)
+library(tidyr)
+library(ggplot2)
+library(dplyr)
+library(tidyverse) 
+library(dplyr)
+data3 <- data3 %>%
+  group_by(A003, E002) %>%
+  summarise(Count = n()) %>%
+  ungroup() %>%
+  mutate(Percentage = Count / sum(Count) * 100)
+data3<-na.omit(data3)
+data3
+library(ggplot2)
+library(viridis)
+data3$A003 <- factor(data3$A003)
+data3$E002 <- factor(data3$E002)
+data3$A003 <- factor(data3$A003, levels = c("1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21"),
+  labels = c(
+    "Construction Industry", "Mining / Metal", "Education / Further Education", 
+    "Chemistry / Pharmaceuticals", "Electrical Engineering", "Energy / Water", 
+    "Vehicle Manufacturing / Supplier", "Finance / Insurance", 
+    "Hospitality / Retail", "Health / Social Services", 
+    "Real Estate / Housing", "Trade / Commerce", 
+    "Information Technology / Communication", 
+    "Art / Entertainment / Recreation", "Agriculture / Forestry", 
+    "Mechanical Engineering", "Food Industry", 
+    "Traffic / Logistics / Transportation", "Other Service Industry", 
+    "Other Manufacturing Industry", "Other Industry")
+)
+data3$E002 <- factor(data3$E002, levels = c("-1", "1", "2", "3", "4"),
+                     labels = c("Irregularly", "More than once a month",
+                                "Once per quarter", "Once per half-year",
+                                "Once a year"))
 ggplot(data3, aes(x = A003, y = Percentage, fill = E002)) +
   geom_bar(stat = "identity",position = "dodge") +
   labs(title = "Frequencies of corporate volunteering events based on industry type",
@@ -104,6 +158,7 @@ ggplot(data3, aes(x = A003, y = Percentage, fill = E002)) +
        y = "Percentage",
        fill = "Frequency") +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))   
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  scale_fill_viridis(discrete = TRUE, option = "D")   
 ```
 
