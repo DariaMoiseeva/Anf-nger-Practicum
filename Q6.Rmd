@@ -57,7 +57,6 @@ data2 <- data2 %>%
   mutate(Percentage = Count / sum(Count) )
 data2
 new_data <- expand.grid(class = levels(data2$class), E002 = levels(data2$E002))
-new_data$Percentage <- predict(model, newdata = new_data)
 library(ggplot2)
 library(viridis)
 data2$class <- factor(data2$class)
