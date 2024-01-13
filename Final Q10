@@ -53,6 +53,4 @@ data.Q10 <- data %>%
   labs(x = "Percent of volunteering employees",
        y = "Percent of companies",
        title = "Companies of different self-concepts compared by percent of engaged employees")+scale_y_continuous(labels = scales::percent_format(accuracy = 1))+coord_flip()
-  
-ggsave("10question.jpeg",device = "jpeg",width = 16,height = 9)
 ```
