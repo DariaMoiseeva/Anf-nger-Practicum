@@ -30,7 +30,6 @@ all_categories <- data.frame(E001 =
                                         "75% and more"),
                                levels=c("less than 25%", "25-49%", "50-74%",
                                         "75% and more")))
-all_categories
 # Count frequencies of each category for service and manufacturing industries
 service_counts <- table(service$E001)
 manufacturing_counts <- table(manufacturing$E001)
