@@ -1,0 +1,117 @@
+---
+title: "newQuestion7"
+author: "Name:Fengyan Shen Nummer:12665659"
+date: "2024-01-13"
+output: pdf_document
+---
+
+```{r}
+# Load necessary libraries
+library(readxl)
+library(ggplot2)
+library(reshape2)
+library(dplyr)
+
+# Read data from Excel file
+wholeSet <- read_xlsx("MUE.2022.for.LMU.xlsx")
+
+# Select relevant columns
+data <- wholeSet[, c(60, 62, 63, 64, 65, 66, 67, 68)]
+
+# Remove rows with NA
+data <- na.omit(data)
+
+# Identify and remove rows with specific values
+todelete <- c()
+for (i in 1:nrow(data)) {
+  if (-2 %in% data[i, 1] || -9 %in% data[i, 1]) {
+    todelete <- c(todelete, i)
+  }
+}
+data <- data[-todelete, ]
+
+# Rename columns
+colnames(data) <- c("participation", "challenge1", "challenge2", "challenge3", "challenge4", "challenge5", "challenge6", "challenge7")
+
+# Convert participation variable to a factor with meaningful labels
+data$participation <- factor(data$participation, 
+                             levels = c(-1, 4, 3, 2, 1),
+                             labels = c("irregularly", "once a year", "once every half a year", "once a quartal", "more often than once a month"))
+
+# Plot individual bar charts for each challenge
+for (i in 2:8) {
+  filtered_data <- data[data[[i]] == TRUE, c(1, i)]
+  
+  p <- ggplot(filtered_data, aes_string(x = names(filtered_data)[2], fill = "participation")) +
+    geom_bar(position = "dodge") +
+    labs(title = paste("Challenge", i - 1),
+         x = "Challenge",
+         y = "Count") +
+    theme_minimal()
+}
+
+# Reshape data into long format
+data_long <- melt(data, id.vars = "participation", variable.name = "challenge", value.name = "presence")
+data_long <- data_long[data_long$presence == TRUE, ]
+
+# Calculate percentage of companies facing each challenge for each participation level
+data_percentage <- data_long %>%
+  group_by(challenge, participation) %>%
+  summarise(count = n(), .groups = 'drop') %>%
+  mutate(total = sum(count),
+         percent = count / total)
+
+# Plot a stacked bar chart for challenges vs. frequency of volunteering
+data_percentage %>%
+  filter(challenge != "challenge7") %>%
+  ggplot(aes(fill = participation, y = percent, x = challenge)) +
+  geom_bar(position = "stack", stat = "identity") +
+  scale_x_discrete(labels = c("Find suitable offers for participation", 
+                              "Get employees to participate", 
+                              "Coordination of employees", 
+                              "Limited time of employees", 
+                              "Cost of the program", 
+                              "Lack of support from the management")) +
+  labs(title = "Volunteering challenges vs Frequency of volunteering",
+       x = "Challenges",
+       y = "Percent of companies",
+       fill = "Frequency of volunteering:") +
+  theme_minimal() +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  theme(axis.text.x = element_text(colour = "black", size = 20),
+        title = element_text(size = 20),
+        axis.title = element_text(size = 20),
+        axis.text.y = element_text(colour = "black", size = 20),
+        legend.text = element_text(size = 20),
+        legend.title = element_text(size = 20)) +
+  scale_fill_brewer(palette = "GnBu") +
+  coord_flip() 
+
+# Save the plot as a JPEG file
+ggsave("7question.png", device = "png", width = 16, height = 9)
+
+``` 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

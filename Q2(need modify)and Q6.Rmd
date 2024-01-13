@@ -1,0 +1,224 @@
+---
+title: "question2"
+author: "Name:Fengyan Shen Nummer:12665659"
+date: "2024-01-13"
+output: pdf_document
+---
+
+
+```{r reading data, include=FALSE}
+library(readxl)
+data <- read_xlsx("MUE.2022.for.LMU.xlsx")
+data
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(ggplot2)
+library(gridExtra)
+library(patchwork)
+library(GGally)
+
+```
+
+```{r  Q2 }
+# creating suitable table for 2nd question 
+data.Q2 <- data %>%
+  select(SERIAL,class,E002)%>%
+# filter answers, that don't give any information about frequency of volunteering
+  filter(E002 > -2) %>%
+  filter(!is.na(E002)) %>%
+# add a column with marginal total for each class of size of company
+  group_by(class) %>%
+  mutate(class_total = length(class))%>%
+# add a column with absolute frequencies for each case
+  group_by(class,E002) %>%
+  mutate(abs_frequency = length(E002)) %>%
+# add a column with conditional relative frequency of the level of frequency of volunteering given the class of size of a company
+  group_by(class,E002) %>%
+  mutate(rel_frequency = abs_frequency / class_total)%>%
+# leave only useful data
+  select(-SERIAL)%>%
+  distinct()%>%
+# rearrange the frequency levels acceding(from "irregular" 
+# to "more often than once a month")
+  mutate(E002 = case_when(E002 == -1 ~ 1,
+                          E002 == 1 ~ 5,
+                          E002 == 2 ~ 4,
+                          E002 == 3 ~ 3,
+                          E002 == 4 ~ 2)) %>%
+# arrange names of classes ascending
+  mutate(class = case_when(class == "Kleine Unternehmen" ~ 1,
+                           class == "Mittlere Unternehmen" ~ 2,
+                           class == "Großunternehmen" ~ 3))
+data.Q2%>%
+  arrange(E002,class)
+# calculate chi-squared test statistic(X^2) and corrected Pearson contingency coefficient(K*) to quantify the strength of correlation
+
+chi_squared <-sum((data.Q2$abs_frequency-data.Q2$exp_abs_frequency)^2 /
+                     data.Q2$exp_abs_frequency)
+#chi_squared
+
+standardized_significance <- sqrt(chi_squared/(chi_squared + data.Q2$total[1])) /    sqrt((min(n_distinct(data.Q2$class),n_distinct(data.Q2$E002))-1)/ min(n_distinct(data.Q2$class),n_distinct(data.Q2$E002)))
+
+#standardized_significance
+
+data.Q2 %>%
+  arrange(E002,class) %>%
+  ggplot(aes(x=class,y = rel_frequency, fill=factor(E002)))+
+  geom_bar(position="fill",stat="identity")+
+  scale_x_continuous(breaks = c(1,2,3), labels=c("small","middle","big"))+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
+  labs(x = "Size of a company",
+       y = "Percent of companies ",
+       title = "Frequency of volunteering vs Size of a company",
+subtitle = "Corrected Pearson contingency coefficient K* = 0.087 (0 <= K* <= 1)") +
+  scale_fill_brewer(name="Frequency of volunteering:",
+                      breaks=c(1,2,3,4,5),
+                      labels=c("irregularly","once a year","once every half a year",                           "once per quartal","more often than once a month"),
+                    palette="GnBu")+
+  theme_minimal()+
+  theme(title=element_text(size = 22),
+        axis.title = element_text(size = 22),
+        axis.text= element_text(colour="black", size = 22),
+        legend.text=element_text(size = 22),
+        legend.title=element_text(size = 22))+
+  coord_flip() 
+
+ggsave("2question.png", device = "png", width = 9, height = 6)
+
+
+```
+
+
+```{r Q6 type and size}
+# creating suitable table for the question 6
+data.Q6.2 <- data %>%
+  select(SERIAL,A003,E002,class)%>%
+  filter(A003 > 0) %>%
+  filter(A003 != "Other Industry") %>%
+# separate all industries by industry type and give them names
+  mutate(A003 = case_when(A003 == 1 ~ "Service",
+                          A003 == 2~ "Manufacturing",
+                          A003 == 3 ~ "Service",
+                          A003 == 4 ~ "Manufacturing",
+                          A003 == 5 ~ "Manufacturing",
+                          A003 == 6 ~ "Service", 
+                          A003 == 7 ~ "Manufacturing",
+                          A003 == 8 ~ "Service", 
+                          A003 == 9 ~ "Service",
+                          A003 == 10 ~ "Service",
+                          A003 == 11 ~ "Service",
+                          A003 == 12 ~ "Service", 
+                          A003 == 13 ~ "Service", 
+                          A003 == 14 ~ "Service",
+                          A003 == 15 ~ "Service", 
+                          A003 == 16 ~ "Manufacturing",
+                          A003 == 17 ~ "Manufacturing", 
+                          A003 == 18 ~ "Service",
+                          A003 == 19 ~ "Service", 
+                          A003 == 20 ~ "Manufacturing"))%>%
+# filter answers, that don't give any information about frequency of volunteering
+  filter(!is.na(A003)) %>%
+  filter(E002 > -2) %>%
+  filter(!is.na(E002)) %>%
+  group_by(A003,class,E002) %>%
+# add a column with absolute frequencies for each case
+  mutate(abs_frequency = length(E002)) %>%
+# add a column with marginal total for each class and industry 
+  group_by(A003,class) %>%
+  mutate(group_total = length(SERIAL)) %>%
+# add a column with conditional relative frequency of the level of frequency of volunteering given the class of size of a company
+  group_by(A003,class,E002) %>%
+  mutate(rel_frequency = abs_frequency / group_total)%>%
+# leave only useful data
+  select(-SERIAL)%>%
+  distinct()%>%
+# rearrange the frequency levels acceding(from "irregular" 
+# to "more often than once a month")
+  mutate(E002 = case_when(E002 == -1 ~ 1,
+                          E002 == 1 ~ 5,
+                          E002 == 2 ~ 4,
+                          E002 == 3 ~ 3,
+                          E002 == 4 ~ 2)) %>%
+# arrange classes
+  mutate(class = case_when(class == "Kleine Unternehmen" ~ 1,
+                           class == "Mittlere Unternehmen" ~ 2,
+                           class == "Großunternehmen" ~ 3)) 
+
+new_labels <- c("1" = "small", "2" = "middle", "3" = "big")
+
+data.Q6.2 %>%
+  ggplot(aes(x=A003, y = rel_frequency, fill=factor(E002)))+
+  geom_bar(position="fill",stat="identity")+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
+  labs(x = "Industry type",
+       y = "Percent of companies",
+       title = "Frequency of volunteering vs Industry type and size of a company") +
+  theme_minimal()+
+  theme(title=element_text(size = 20),
+        axis.title = element_text(size = 20),
+        axis.text.x = element_text(colour="black",size = 10),
+        axis.text.y = element_text(colour="black",size = 15),
+        legend.text= element_text(size = 20),
+        legend.title=element_text(size = 20),
+        strip.text.x = element_text(size = 20))+
+  scale_fill_brewer(name="Frequency of volunteering:",
+                      breaks=c(1,2,3,4,5),
+                      labels=c("irregularly","once a year","once in a half a year",                           "once per quartal","more often than once a month"),
+                      palette = "GnBu")+
+  facet_wrap(vars(class),labeller=labeller(class=new_labels))+
+  coord_flip() 
+
+ggsave("6.1question.jpeg",device = "jpeg", width = 16, height = 9)
+
+data.Q6.2 %>%
+  ggplot(aes(x=class, y = rel_frequency, fill=factor(E002)))+
+  geom_bar(position="fill",stat="identity")+
+  scale_x_continuous(breaks = c(1,2,3), labels=c("small","middle","big"))+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
+  labs(x = "Company size",
+       y = "Percent of companies",
+       title = "Frequency of volunteering vs Size of a company") +
+  theme_minimal()+
+  theme(title=element_text(size = 20),
+        axis.title = element_text(size = 20),
+        axis.text.x = element_text(colour="black", size = 15),
+        axis.text.y = element_text(colour="black",size = 15),
+        legend.text= element_text(size = 19),
+        legend.title=element_text(size = 20),
+        strip.text.x = element_text(size = 20))+
+  scale_fill_brewer(name="Frequency of volunteering:",
+                      breaks=c(1,2,3,4,5),
+                      labels=c("irregularly","once a year","once in a half a year",                           "once per quartal","more often than once a month"),
+                      palette = "GnBu")+
+  facet_wrap(vars(A003))+
+  coord_flip() 
+
+ggsave("6.2question.jpeg",device = "jpeg", width = 16, height = 9)
+
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
