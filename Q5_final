@@ -88,4 +88,50 @@ of engaged employees")+
   coord_flip() 
 
 ggsave("5.1question.png",device = "png",width = 16,height = 9)
+
+#Q5.3
+library(readxl)
+da <- read_xlsx("MUE.2022.for.LMU.xlsx")
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(ggplot2)
+da <- da[, c(10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 89)]
+companies <- data.frame(da)
+colnames(companies) <- c("Arts and Culture", "Sport", "Leisure and socializing",
+                         "Science and Research", "Education and further training",
+                         "Health", "Social Affairs", "Population/disaster protection",
+                         "Climate and environmental protection", "Development cooperation",
+                         "Church and religion", "Other areas", "Regions")
+
+df <- companies
+long_df <- pivot_longer(df, 
+                        cols = -Regions, 
+                        names_to = "Industry", 
+                        values_to = "Involved") %>%
+  filter(Involved) %>%
+  group_by(Regions, Industry) %>%
+  summarise(Count = n()) %>%
+  ungroup() %>%
+  group_by(Regions) %>%
+  mutate(Total = sum(Count),
+         Percent = Count / Total * 100) %>%
+  ungroup()
+dark_colors <- c(
+  "salmon", "tomato", "darkorange", "peru", "goldenrod", 
+  "khaki", "darkkhaki",  "darkseagreen", 
+  "cadetblue", "steelblue", "slategray", "lightsteelblue"
+)
+
+ggplot(long_df, aes(x = Regions, y = Percent, fill = Industry)) +
+  geom_bar(stat = "identity", position = "fill") +
+  coord_flip() + 
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(values = dark_colors) + 
+  theme_minimal() +
+  labs(title = "Percentage of Industries in Each Region",
+       x = "Region",
+       y = "Percentage",
+       fill = "Industry")
+ggsave("5.2question.jpeg",device = "jpeg",width = 16,height = 9)
 ```
